@@ -15,6 +15,11 @@ public class Station : MonoBehaviour
     public float minimumTime;
     public float maximumTime;
     public bool working;
+    public bool waiting;
+    public float maxDay;
+    public float dayTimer = 0;
+
+    public bool acceptAnyTask;
 
     public Task currentTask;
 
@@ -24,7 +29,12 @@ public class Station : MonoBehaviour
 
     float timer = 0;
     public Text timerText;
-
+    int currentDay = 0;
+     QueueManager queueManager;
+    private void Awake()
+    {
+        queueManager = FindObjectOfType<QueueManager>();
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -34,14 +44,34 @@ public class Station : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(dayTimer < maxDay)
+        {
+            dayTimer += Time.deltaTime;
+
+        }
+        else if (dayTimer >= maxDay)
+        {
+            //timer = 0;
+            GetComponent<Renderer>().material.color = Color.grey;
+
+            waiting = true;
+        }
+        if(currentDay < queueManager.dayCount)
+        {
+            currentDay = queueManager.dayCount;
+            dayTimer = 0;
+            waiting = false;
+        }
+
+
         timerText.text = timer.ToString("#.##");
-        if (currentTask == null)
+        if (currentTask == null && !waiting)
         {
             GetComponent<Renderer>().material.color = Color.cyan;
 
-            lastQueue.RetrieveTask(groupNumber);
+            lastQueue.RetrieveTask(groupNumber,acceptAnyTask);
         }
-        if (currentTask != null)
+        if (currentTask != null && !waiting)
         {
            
             if(currentTask.simple)

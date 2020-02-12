@@ -1,12 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class QueueManager : MonoBehaviour
 {
     public int groups = 3;
     public Queuer beginningQueue;
     public Queuer endQueue;
+    public Text dayCountText;
+    public Text dayTimeText;
 
     public int groupOneSimple;
     public int groupOneComplex; 
@@ -25,18 +28,35 @@ public class QueueManager : MonoBehaviour
     public int totalObjects;
     public List<GameObject> finishedTask;
 
+    public int dayCount = 0;
+    public float dayLength;
+    public float dayTimer = 0;
 
    [Range(0,100f)] public float timeScale;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        totalObjects += groupOneSimple + groupOneComplex + groupTwoComplex + groupTwoSimple + groupThreeSimple + groupThreeComplex;
+        dayCountText.text = "Day Count: " + dayCount;
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
+        dayTimeText.text = "Time: " + dayTimer.ToString("#.#") + "/6.3";
+
+        if (dayTimer < dayLength)
+        {
+            dayTimer += Time.deltaTime;
+        }
+        else if (dayTimer >= dayLength)
+        {
+            dayCount++;
+            dayCountText.text = "Day Count: " + dayCount;
+
+            dayTimer = 0;
+        }
         if (endQueue.RequestedTasks.Count < totalObjects)
         {
             elapsedTime += Time.deltaTime;
@@ -54,6 +74,7 @@ public class QueueManager : MonoBehaviour
         else 
         {
             timer += Time.deltaTime;
+            
         }
     }
 

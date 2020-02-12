@@ -8,6 +8,7 @@ public class Queuer : MonoBehaviour
     public Station[] NextStation;
 
     public Text numberInQText;
+    QueueManager queueManager;
     private void Awake()
     {
         numberInQText = GetComponentInChildren<Text>();
@@ -15,11 +16,11 @@ public class Queuer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        queueManager = FindObjectOfType<QueueManager>();
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         numberInQText.text = "" + RequestedTasks.Count;
         if(RequestedTasks.Count > 0)
@@ -32,16 +33,18 @@ public class Queuer : MonoBehaviour
             GetComponent<Renderer>().material.color = Color.gray;
 
         }
+        if(RequestedTasks.Count == queueManager.totalObjects)
+        { queueManager.timeScale = 0; }
     }
 
-    public void RetrieveTask(int group)
+    public void RetrieveTask(int group, bool any)
     {
       //  int removeItem;
         foreach (Task task in RequestedTasks)
         {
            // print("HI");
 
-            if (task.groupNumber == group)
+            if (task.groupNumber == group && !any)
             {
                 
                 NextStation[group - 1].currentTask = task;
@@ -49,13 +52,20 @@ public class Queuer : MonoBehaviour
                 RequestedTasks.Remove(task);
                 break;
             }
-            else if(group == 0 || group == 4)
+            else if(group == 0 || group == 4 && !any)
             {
                 if(group == 0)
                 NextStation[group].currentTask = task;
                 if(group == 4)
                 NextStation[1].currentTask = task;
 
+                //print("Hello");
+                RequestedTasks.Remove(task);
+                break;
+            }
+            else 
+            {
+                NextStation[group - 1].currentTask = task;
                 //print("Hello");
                 RequestedTasks.Remove(task);
                 break;
