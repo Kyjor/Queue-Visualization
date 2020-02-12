@@ -5,6 +5,8 @@ using UnityEngine;
 public class Task 
 
 {
+
+    public bool simple;
     //Length of task
     public float taskTime = 0;
     //Total Time in cycle
@@ -13,7 +15,8 @@ public class Task
     public float activeTime = 0;
     //Time object spends waiting in queue
     public float waitingTime = 0;
-
+    //Group Number of task
+    public int groupNumber;
 
     //Record of time in station
     public float eaTime = 0;
