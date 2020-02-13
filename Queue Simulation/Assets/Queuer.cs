@@ -20,7 +20,7 @@ public class Queuer : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         numberInQText.text = "" + RequestedTasks.Count;
         if(RequestedTasks.Count > 0)
@@ -44,9 +44,9 @@ public class Queuer : MonoBehaviour
         {
            // print("HI");
 
-            if (task.groupNumber == group && !any)
+            if (task.groupNumber == group && !any && group != 0)
             {
-                
+                NextStation[group - 1].ChooseNormalNumber(task.simple);
                 NextStation[group - 1].currentTask = task;
                 //print("Hello");
                 RequestedTasks.Remove(task);
@@ -54,10 +54,16 @@ public class Queuer : MonoBehaviour
             }
             else if(group == 0 || group == 4 && !any)
             {
-                if(group == 0)
-                NextStation[group].currentTask = task;
-                if(group == 4)
-                NextStation[1].currentTask = task;
+                if (group == 0)
+                {
+                    NextStation[group].ChooseNormalNumber(task.simple);
+                    NextStation[group].currentTask = task;
+                }
+                if (group == 4)
+                {
+                    NextStation[1].ChooseNormalNumber(task.simple);
+                    NextStation[1].currentTask = task;
+                }
 
                 //print("Hello");
                 RequestedTasks.Remove(task);
@@ -65,6 +71,7 @@ public class Queuer : MonoBehaviour
             }
             else 
             {
+                NextStation[group - 1].ChooseNormalNumber(task.simple);
                 NextStation[group - 1].currentTask = task;
                 //print("Hello");
                 RequestedTasks.Remove(task);

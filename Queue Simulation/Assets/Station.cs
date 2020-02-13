@@ -8,16 +8,24 @@ public class Station : MonoBehaviour
 {
     public Queuer lastQueue;
     public Queuer nextQueue;
-    public float stationTimeSimple;
-    public float stationSDSimple;
-    public float stationTimeComplex;
-    public float stationSDComplex;
-    public float minimumTime;
-    public float maximumTime;
+
+    public double stationTimeSimple;
+    
+    public double stationTimeMeanSimple;
+    public double stationSDSimple;
+
+    public double stationTimeComplex;
+
+    public double stationTimeMeanComplex;
+    public double stationSDComplex;
+
+
+    public double minimumTime;
+    public double maximumTime;
     public bool working;
     public bool waiting;
-    public float maxDay;
-    public float dayTimer = 0;
+    public double maxDay;
+    public double dayTimer = 0;
 
     public bool acceptAnyTask;
 
@@ -27,10 +35,12 @@ public class Station : MonoBehaviour
 
     Color currentColor;
 
-    float timer = 0;
+    double timer = 0;
     public Text timerText;
     int currentDay = 0;
      QueueManager queueManager;
+
+    public double waitingTimeElapsed = 0;
     private void Awake()
     {
         queueManager = FindObjectOfType<QueueManager>();
@@ -65,13 +75,14 @@ public class Station : MonoBehaviour
 
 
         timerText.text = timer.ToString("#.##");
-        if (currentTask == null && !waiting)
+        if (currentTask == null && !waiting /*&& !currentTask.isActive*/)
         {
+            waitingTimeElapsed += Time.deltaTime;
             GetComponent<Renderer>().material.color = Color.cyan;
-
-            lastQueue.RetrieveTask(groupNumber,acceptAnyTask);
+          
+            RetrieveTask();
         }
-        if (currentTask != null && !waiting)
+        if (currentTask != null && !waiting /*&& currentTask.isActive*/)
         {
            
             if(currentTask.simple)
@@ -90,6 +101,8 @@ public class Station : MonoBehaviour
             }
             else if (!currentTask.simple)
             {
+                print("Hello");
+
                 GetComponent<Renderer>().material.color = Color.yellow;
 
                 if (timer < stationTimeComplex)
@@ -113,8 +126,88 @@ public class Station : MonoBehaviour
         currentTask = null;
     }
 
-    void SetTime()
+    void RetrieveTask()
     {
+        //  int removeItem;
+        foreach (Task task in lastQueue.RequestedTasks)
+        {
+            // print("HI");
 
+            if (acceptAnyTask)
+            {
+                ChooseNormalNumber(task.simple);
+                currentTask = task;
+                //print("Hello");
+                lastQueue.RequestedTasks.Remove(task);
+                break;
+            }
+            else if (!acceptAnyTask)
+            {
+                if(task.groupNumber == groupNumber)
+                {
+                    ChooseNormalNumber(task.simple);
+                    currentTask = task;
+                    lastQueue.RequestedTasks.Remove(task);
+                    break;
+                }
+                else if(task.groupNumber != groupNumber)
+                {
+                    continue;
+                }
+            }
+            
+        }
     }
+    void ChooseNormalNumber(double mean, double stdDev, double min, double max, ref double times)
+    {
+        System.Random rand = new System.Random(); //reuse this if you are generating many
+        double u1 = 1.0 - rand.NextDouble(); //uniform(0,1] random doubles
+        double u2 = 1.0 - rand.NextDouble();
+        double randStdNormal = System.Math.Sqrt(-2.0 * System.Math.Log(u1)) *
+                     System.Math.Sin(2.0 * System.Math.PI * u2); //random normal(0,1)
+        double randNormal = mean + stdDev * randStdNormal; //random normal(mean,stdDev^2)
+
+        randNormal = System.Math.Min(randNormal, max);
+        randNormal = System.Math.Max(randNormal, min);
+
+        times = randNormal;
+
+
+        
+    }
+
+    public void ChooseNormalNumber(bool simple)
+    {
+        double mean = 0,  stdDev = 0,  min = minimumTime,  max = maximumTime,  times;
+        if(simple)
+        {
+            mean = stationTimeMeanSimple;
+            stdDev = stationSDSimple;
+        }
+        else if(!simple)
+        {
+            mean = stationTimeMeanComplex;
+            stdDev = stationSDComplex;
+        }
+        System.Random rand = new System.Random(); //reuse this if you are generating many
+        double u1 = 1.0 - rand.NextDouble(); //uniform(0,1] random doubles
+        double u2 = 1.0 - rand.NextDouble();
+        double randStdNormal = System.Math.Sqrt(-2.0 * System.Math.Log(u1)) *
+                     System.Math.Sin(2.0 * System.Math.PI * u2); //random normal(0,1)
+        double randNormal = mean + stdDev * randStdNormal; //random normal(mean,stdDev^2)
+
+        randNormal = System.Math.Min(randNormal, max);
+        randNormal = System.Math.Max(randNormal, min);
+
+        if (simple)
+        {
+            stationTimeSimple = randNormal;
+        }
+        else if (!simple)
+        {
+            stationTimeComplex = randNormal;
+        }
+
+
+        }
 }

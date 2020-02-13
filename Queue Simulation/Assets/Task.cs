@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//[System.Serializable]
 public class Task 
 
 {
-
+    public bool isActive;
+    //
     public bool simple;
     //Length of task
     public float taskTime = 0;

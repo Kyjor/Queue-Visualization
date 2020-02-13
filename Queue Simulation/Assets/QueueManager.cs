@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class QueueManager : MonoBehaviour
 {
+    public Task[] tasks;
+
     public int groups = 3;
     public Queuer beginningQueue;
     public Queuer endQueue;
@@ -21,18 +23,18 @@ public class QueueManager : MonoBehaviour
     public int groupThreeComplex;
 
 
-    public float arrivalRate = .939220183f;
-    public float timer = 0;
-    public float elapsedTime;
+    public double arrivalRate = .939220183f;
+    public double timer = 0;
+    public double elapsedTime;
 
     public int totalObjects;
     public List<GameObject> finishedTask;
 
     public int dayCount = 0;
-    public float dayLength;
-    public float dayTimer = 0;
+    public double dayLength;
+    public double dayTimer = 0;
 
-   [Range(0,100f)] public float timeScale;
+   [Range(0,10)] public int timeScale;
 
     // Start is called before the first frame update
     void Start()
@@ -42,7 +44,7 @@ public class QueueManager : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         dayTimeText.text = "Time: " + dayTimer.ToString("#.#") + "/6.3";
 
@@ -80,7 +82,7 @@ public class QueueManager : MonoBehaviour
 
     void AddItem()
     {
-       // print("AddItemAttempt");
+        print("Hello");
         int groupChoice = Random.Range(0,3);
         int simpleOrComplex;
         switch (groupChoice) 
@@ -93,7 +95,7 @@ public class QueueManager : MonoBehaviour
                     Task newTask = new Task();
                     newTask.groupNumber = 1;
                     newTask.simple = true;
-
+                    newTask.isActive = true;
                     beginningQueue.RequestedTasks.Add(newTask);
                     --groupOneSimple;
                     
@@ -104,6 +106,8 @@ public class QueueManager : MonoBehaviour
                     Task newTask = new Task();
                     newTask.groupNumber = 1;
                     newTask.simple = false;
+                    newTask.isActive = true;
+
 
                     beginningQueue.RequestedTasks.Add(newTask);
                     --groupOneComplex;
@@ -124,6 +128,8 @@ public class QueueManager : MonoBehaviour
                     Task newTask = new Task();
                     newTask.groupNumber = 2;
                     newTask.simple = true;
+                    newTask.isActive = true;
+
 
                     beginningQueue.RequestedTasks.Add(newTask);
                     --groupTwoSimple;
@@ -135,6 +141,8 @@ public class QueueManager : MonoBehaviour
                     Task newTask = new Task();
                     newTask.groupNumber = 2;
                     newTask.simple = false;
+                    newTask.isActive = true;
+
 
                     beginningQueue.RequestedTasks.Add(newTask);
                     --groupTwoComplex;
@@ -155,6 +163,8 @@ public class QueueManager : MonoBehaviour
                     Task newTask = new Task();
                     newTask.groupNumber = 3;
                     newTask.simple = true;
+                    newTask.isActive = true;
+
 
                     beginningQueue.RequestedTasks.Add(newTask);
                     --groupThreeSimple;
@@ -166,6 +176,8 @@ public class QueueManager : MonoBehaviour
                     Task newTask = new Task();
                     newTask.groupNumber = 3;
                     newTask.simple = false;
+                    newTask.isActive = true;
+
 
                     beginningQueue.RequestedTasks.Add(newTask);
                     --groupThreeComplex;
@@ -183,4 +195,6 @@ public class QueueManager : MonoBehaviour
             
 
     }
+
+    
 }
